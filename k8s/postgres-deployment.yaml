@@ -24,9 +24,14 @@ spec:
         #     cpu: "500m"
         ports:
         - containerPort: 5432
-        env:
+        env: 
           - name: 'POSTGRES_PASSWORD'
-            value: 'password'
+            valueFrom:
+                secretKeyRef:
+                  name: pgpassword
+                  key: PG_PASSWORD
+            #Replaced after creating a secret with: kubectl create secret generic pgpassword --from-literal PG_PASSWORD=password123
+            # value: 'password123'
         volumeMounts:
           - name: postgres-storage
             mountPath: /var/lib/postgresql/data
