@@ -1,0 +1,34 @@
+#language: node_js
+#node_js:
+#  - 12
+services:
+  - docker
+
+env:
+  global:
+    - SHA=$(git rev-parse HEAD)
+
+before_install:
+  #run commands specific to the cloud provider
+
+ #Log in to the Docker CLI
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  #Build the test image
+  - docker build -t andicirjaliu/docker_complex_client_test -f ./client/Dockerfile.dev ./client  
+
+script:
+  #Run the test image  
+  - docker run andicirjaliu/docker_complex_client_test npm run test -- --coverage --watchAll=false 
+
+deploy:
+  #specify that will run a script to deploy
+  provider: script
+  #specify the script to run to deploy
+  script: bash ./deploy.sh
+  on:
+    #specify the git branch
+    branch: master
+
+# after_success:
+ 
+ 
